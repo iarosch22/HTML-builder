@@ -6,6 +6,7 @@ const path = require('path');
 
 const destination = path.join(__dirname, 'project-dist');
 const source = path.join(__dirname, 'components');
+const sourceStyles = path.join(__dirname, 'styles');
 
 async function createHtml(destination, source) {
   let temp = await fsP.readFile(path.join(__dirname, 'template.html'));
@@ -25,4 +26,18 @@ async function createHtml(destination, source) {
   });
 }
 
+(async () => {
+  let writeableStream = fs.createWriteStream(path.join(destination, 'style.css'));
+  const files = await fsP.readdir(sourceStyles, {withFileTypes: true});
+
+  files.forEach(async file => {
+    const type = path.extname(path.join(source, file.name)).substring(1);
+    let readableStream = fs.createReadStream(path.join(sourceStyles, file.name), 'utf8');
+    if(type === 'css') {
+      readableStream.on('data', function(chunk) {
+        writeableStream.write(chunk);
+      });
+    }
+  });
+})();
 createHtml(destination, source);
