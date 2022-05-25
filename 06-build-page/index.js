@@ -1,5 +1,3 @@
-// Дорогой друг, если не сложно, проверь, пожалуйста, через день. Я все доделаю, обещаю:) Спасибо!
-
 const fsP = require('fs/promises');
 const fs = require('fs');
 const path = require('path');
@@ -41,9 +39,33 @@ const sourceStyles = path.join(__dirname, 'styles');
   });
 })();
 
-// const destinationAssets = path.join(__dirname, 'project-dist', 'assets');
-// const sourceAssets = path.join(__dirname, 'assets');
+const destinationAssets = path.join(destination, 'assets');
+const sourceAssets = path.join(__dirname, 'assets');
 
 // (async () => {
-//   fs.mkdir(destinationAssets, {recursive: true});
+//   fsP.mkdir(destinationAssets, {recursive: true});
+//   const files = await fsP.readdir(sourceAssets, {withFileTypes: true});
+//   files.forEach(async file => {
+//     if(file.isFile()) {
+//       await fsP.copyFile(path.join(sourceAssets, file.name), path.join(destinationAssets, file.name));
+//     } else {
+//       console.log(file.name);
+//     }
+//   });
 // })();
+
+async function copyDir(destination, source) {
+  await fsP.mkdir(destination, {recursive: true});
+
+  const files = await fsP.readdir(source, {withFileTypes: true});
+  files.forEach(async file => {
+    if(file.isFile()) {
+      await fsP.copyFile(path.join(source, file.name), path.join(destination, file.name));
+    } else {
+      copyDir(path.join(destination, file.name), path.join(source, file.name));
+    //   console.log(path.join(source, file.name));
+    //   console.log(path.join(destination, file.name));
+    }
+  });
+}
+copyDir(destinationAssets, sourceAssets);
