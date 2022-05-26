@@ -25,6 +25,7 @@ const sourceStyles = path.join(__dirname, 'styles');
 })();
 
 (async () => {
+  await fsP.mkdir(destination, {recursive: true});
   let writeableStream = fs.createWriteStream(path.join(destination, 'style.css'));
   const files = await fsP.readdir(sourceStyles, {withFileTypes: true});
 
